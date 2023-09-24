@@ -3,11 +3,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import {styled} from 'styled-components/native';
 import {Text} from '../../../styles/sharedStyles';
 
-export const Container = styled.TouchableOpacity`
+type Props = {
+  focus: boolean;
+};
+
+export const Container = styled.TouchableOpacity<Props>`
   width: 130px;
   height: 200px;
   border-radius: 8px;
   overflow: hidden;
+  ${({focus, theme}) => {
+    return focus ? `border: 3px solid ${theme.base.mainColor}` : '';
+  }}
 `;
 
 export const ImageBackground = styled.ImageBackground`

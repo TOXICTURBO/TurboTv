@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Dropdown} from '../../components';
 import {DropdownData} from '../../@types';
@@ -48,35 +48,63 @@ import {helpers} from '../../utils';
 // };
 
 const TestingScreen: React.FC = () => {
+  const [selectedDay, setSelectedDay] = React.useState<any>(null);
+
   const {results} = AiringSchedule;
   const formatted = helpers.structureAiringSchedule(results);
-  console.log(JSON.stringify(formatted, null, 2));
+
+  React.useEffect(() => {
+    // Set the default day to the first available day
+    const firstMonth = Object.keys(formatted[Object.keys(formatted)[0]])[0];
+    const firstDay = Object.keys(
+      formatted[Object.keys(formatted)[0]][firstMonth],
+    )[0];
+    setSelectedDay(firstDay);
+  }, []);
+
   return (
-    <>
-      {Object.entries(formatted).map(([year, months]) => {
-        return (
-          <>
-            {Object.entries(months).map(([month, days]) => {
-              return (
-                <>
-                  <Text>{month}</Text>
-                  {Object.entries(days).map(([day, animeList]) => {
-                    return (
-                      <>
-                        <Text>{day}</Text>
-                        {animeList.map(anime => {
-                          return <Text>{anime.title.userPreferred}</Text>;
-                        })}
-                      </>
-                    );
-                  })}
-                </>
-              );
-            })}
-          </>
-        );
-      })}
-    </>
+    <View>
+      {Object.entries(formatted).map(([year, months]) => (
+        <View key={year}>
+          {Object.entries(months).map(([month, days]) => (
+            <View key={month}>
+              <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                {Object.entries(days).map(([day, animeList]) => (
+                  <TouchableOpacity
+                    key={day}
+                    style={{
+                      padding: 10,
+                      backgroundColor:
+                        selectedDay === day ? 'green' : 'transparent',
+                      borderRadius: 5,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                    onPress={() => setSelectedDay(day)}>
+                    <Text style={{fontSize: 14, fontWeight: 'bold'}}>
+                      {day}/{month}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {selectedDay === null || selectedDay in days ? (
+                <View>
+                  {selectedDay !== null &&
+                    days[selectedDay].map(anime => (
+                      <View key={anime.id}>
+                        <Text>Title: {anime.title.userPreferred}</Text>
+                        {/* Render other anime details as needed */}
+                      </View>
+                    ))}
+                </View>
+              ) : (
+                <Text>Select a day to view anime</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      ))}
+    </View>
   );
 };
 

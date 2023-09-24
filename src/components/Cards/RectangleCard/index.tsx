@@ -21,6 +21,7 @@ const RectangleCard = ({
   relation_type,
   type,
 }: CardProps) => {
+  const [focus, setFocus] = React.useState(false);
   const navigation = useNavigation<StackNavigation>();
   const actualTitle = utils.getTitle(title);
 
@@ -30,7 +31,16 @@ const RectangleCard = ({
   };
 
   return (
-    <Container onPress={onPress}>
+    <Container
+      activeOpacity={1}
+      focus={focus}
+      onPress={onPress}
+      onFocus={e => {
+        setFocus(true);
+      }}
+      onBlur={() => {
+        setFocus(false);
+      }}>
       <ImageBackground source={{uri: poster_image}}>
         {/* @ts-ignore */}
         <Wrapper>

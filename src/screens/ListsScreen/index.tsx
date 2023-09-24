@@ -66,6 +66,12 @@ const ListsScreen = () => {
     queryFn: () => api.fetchAnilistLists(accessToken, anilist),
   });
 
+  if (isError)
+    return (
+      <MiddleOfScreenTextComponent
+        text={error?.message ?? 'There was an unexpected error'}
+      />
+    );
   if (isPending) return <MiddleOfScreenLoadingComponent />;
   if (data?.length <= 0)
     return (
@@ -74,34 +80,10 @@ const ListsScreen = () => {
 
   const selectedLisData = data[selectedList?.toLowerCase()];
 
-  const handleGesture = (evt: any) => {
-    const {nativeEvent} = evt;
-
-    const findCurrentList = listTypes.find(
-      listType => listType.value === selectedList,
+  if (!selectedLisData)
+    return (
+      <MiddleOfScreenTextComponent text={'There was an unexpected error'} />
     );
-
-    if (!findCurrentList) return;
-
-    const indexOfCurrentList = listTypes.indexOf(findCurrentList);
-
-    const nextList =
-      indexOfCurrentList + 1 > listTypes.length ? 0 : indexOfCurrentList + 1;
-
-    const prevList =
-      indexOfCurrentList - 1 < 0
-        ? listTypes.length - 1
-        : indexOfCurrentList - 1;
-
-    if (nativeEvent.velocityX > 0) {
-      // Swipe right
-      setSelectedList(listTypes[prevList].value);
-    } else {
-      // Swipe left
-      setSelectedList(listTypes[nextList].value);
-    }
-    console.log(selectedList);
-  };
 
   return (
     <SafeAreaView>
